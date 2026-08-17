@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Oreal Excel Data Processing Dashboard</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .file-drop-zone {
+            transition: all 0.2s ease;
+        }
+        .file-drop-zone.dragover {
+            background-color: #f0fdf4;
+            border-color: #22c55e;
+            transform: scale(1.02);
+        }
+        /* Custom spinner for processing state */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col items-center py-10 px-4 sm:px-6 lg:px-8">
+
+    <div class="max-w-5xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <!-- Header -->
+        <div class="bg-slate-900 text-white p-6 sm:p-10 relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')]"></div>
+            <div class="relative z-10 flex items-center gap-4">
+                <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">L'Oreal Data Pipeline</h1>
+            </div>
+            <p class="mt-4 text-slate-300 text-sm sm:text-base relative z-10 max-w-3xl leading-relaxed">
+                Upload your <strong>LOR.xlsx</strong> transactional file and the <strong>Items Master</strong> file. This tool merges the data, extracts packaging variables (EA, OT, CS, PL), and injects live Excel formulas (QTY, Pallet, Cases, Each) directly into the output file securely within your browser.
+            </p>
+        </div>
+
+        <div class="p-6 sm:p-10 space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- LOR File Uploader -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-semibold text-gray-700">1. Main File (LOR.xlsx)</label>
+                    <div id="lor-zone" class="file-drop-zone relative border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer h-48">
+                        <input type="file" id="lor-file" accept=".xlsx, .xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <div class="bg-blue-100 text-blue-600 p-3 rounded-full mb-3">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        </div>
+                        <span class="text-sm text-gray-600 font-medium">Drag & drop or browse</span>
+                        <span id="lor-name" class="mt-2 text-xs font-semibold text-blue-600 text-center px-4 break-all"></span>
+                    </div>
+                </div>
+
+                <!-- Master File Uploader -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-semibold text-gray-700">2. Items Master File</label>
+                    <div id="master-zone" class="file-drop-zone relative border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer h-48">
+                        <input type="file" id="master-file" accept=".xlsx, .xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <div class="bg-blue-100 text-blue-600 p-3 rounded-full mb-3">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        </div>
+                        <span class="text-sm text-gray-600 font-medium">Drag & drop or browse</span>
+                        <span id="master-name" class="mt-2 text-xs font-semibold text-blue-600 text-center px-4 break-all"></span>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-gray-200">
+
+            <!-- Actions & Status -->
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <button id="process-btn" disabled class="w-full md:w-auto px-8 py-3.5 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg focus:ring-4 focus:ring-blue-200 disabled:bg-gray-300 disabled:text-gray-500 disabled:shadow-none disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                    Generate & Download Excel
+                </button>
+
+                <!-- Processing status / Success message -->
+                <div id="status-container" class="hidden flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-lg border border-slate-200 w-full md:w-auto flex-1 md:flex-none justify-center">
+                    <div id="spinner" class="loader hidden"></div>
+                    <span id="status-text" class="font-medium text-slate-700 text-sm">Processing...</span>
+                </div>
+            </div>
+
+            <!-- Error Log container -->
+            <div id="error-box" class="hidden mt-4 p-4 bg-red-50 text-red-700 rounded-lg text-sm border border-red-200 flex items-start gap-3">
+                <svg class="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div id="error-msg" class="break-words"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const lorInput = document.getElementById('lor-file');
+        const masterInput = document.getElementById('master-file');
+        const lorName = document.getElementById('lor-name');
+        const masterName = document.getElementById('master-name');
+        const processBtn = document.getElementById('process-btn');
+        const statusContainer = document.getElementById('status-container');
+        const statusText = document.getElementById('status-text');
+        const spinner = document.getElementById('spinner');
+        const errorBox = document.getElementById('error-box');
+        const errorMsg = document.getElementById('error-msg');
+
+        let lorFileObj = null;
+        let masterFileObj = null;
+
+        // UI Event Listeners for File Inputs
+        function handleFileSelect(inputElement, nameElement, isMaster) {
+            if (inputElement.files.length > 0) {
+                const file = inputElement.files[0];
+                nameElement.textContent = file.name;
+                if (isMaster) {
+                    masterFileObj = file;
+                } else {
+                    lorFileObj = file;
+                }
+                checkReadyState();
+            }
+        }
+
+        lorInput.addEventListener('change', () => handleFileSelect(lorInput, lorName, false));
+        masterInput.addEventListener('change', () => handleFileSelect(masterInput, masterName, true));
+
+        // Drag and drop visual tweaks
+        document.querySelectorAll('.file-drop-zone').forEach(zone => {
+            zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+            zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                const fileInput = zone.querySelector('input[type="file"]');
+                if (e.dataTransfer.files.length > 0) {
+                    fileInput.files = e.dataTransfer.files;
+                    fileInput.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+
+        function checkReadyState() {
+            processBtn.disabled = !(lorFileObj && masterFileObj);
+        }
+
+        function showError(msg) {
+            errorMsg.textContent = msg;
+            errorBox.classList.remove('hidden');
+            spinner.classList.add('hidden');
+            statusText.parentElement.classList.add('hidden');
+        }
+
+        function updateStatus(msg, showSpinner = true) {
+            statusContainer.classList.remove('hidden');
+            errorBox.classList.add('hidden');
+            statusText.textContent = msg;
+            
+            if (showSpinner) {
+                spinner.classList.remove('hidden');
+                statusText.classList.replace('text-green-600', 'text-slate-700');
+            } else {
+                spinner.classList.add('hidden');
+                statusText.classList.replace('text-slate-700', 'text-green-600');
+            }
+        }
+
+        // Helper to read file as ArrayBuffer
+        function readFileAsync(file) {
+            return new Promise((resolve, reject) => {
+                let reader = new FileReader();
+                reader.onload = (e) => resolve(new Uint8Array(e.target.result));
+                reader.onerror = (e) => reject(new Error(`Failed to read file ${file.name}`));
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        processBtn.addEventListener('click', async () => {
+            try {
+                processBtn.disabled = true;
+                updateStatus("Reading Excel files...", true);
+
+                // Add small delay to let UI render the loading state before blocking thread
+                await new Promise(resolve => setTimeout(resolve, 100)); 
+
+                // 1. Read files into memory
+                const lorData = await readFileAsync(lorFileObj);
+                const masterData = await readFileAsync(masterFileObj);
+
+                const wbLor = XLSX.read(lorData, { type: 'array' });
+                const wbMaster = XLSX.read(masterData, { type: 'array' });
+
+                const wsLor = wbLor.Sheets[wbLor.SheetNames[0]];
+                const wsMaster = wbMaster.Sheets[wbMaster.SheetNames[0]];
+
+                updateStatus("Parsing rows...", true);
+                await new Promise(resolve => setTimeout(resolve, 50)); 
+
+                // Convert to Array of Arrays. 
+                // CRITICAL FIX: defval: "" ensures no sparse arrays (which cause Invalid Array Length crashes)
+                const lorAoA = XLSX.utils.sheet_to_json(wsLor, { header: 1, defval: "" });
+                const masterAoA = XLSX.utils.sheet_to_json(wsMaster, { header: 1, defval: "" });
+
+                if (lorAoA.length < 1 || masterAoA.length < 1) {
+                    throw new Error("One or both of the Excel sheets appear to be completely empty.");
+                }
+
+                updateStatus("Building Lookup Table...", true);
+                await new Promise(resolve => setTimeout(resolve, 50));
+
+                // 2. Build Master Mapping Object
+                // Master Key: Column B (index 1)
+                // Values to extract: G(6), H(7), I(8), J(9) -> (EA, OT, CS, PL)
+                const masterMap = {};
+                for (let i = 1; i < masterAoA.length; i++) {
+                    const row = masterAoA[i];
+                    if (row && row.length > 1) {
+                        const key = String(row[1]).trim();
+                        if (key !== "") {
+                            // Convert packaging values to strict numbers
+                            masterMap[key] = [
+                                Number(row[6]) || 0, // EA
+                                Number(row[7]) || 0, // OT
+                                Number(row[8]) || 0, // CS
+                                Number(row[9]) || 0  // PL
+                            ];
+                        }
+                    }
+                }
+
+                updateStatus("Merging & Injecting Formulas...", true);
+                await new Promise(resolve => setTimeout(resolve, 50));
+
+                // 3. Construct Final Merged Data Layout
+                const resultAoA = [];
+                
+                // Construct Headers safely up to Column U (index 0 to 20)
+                const originalLorHeaders = lorAoA[0].slice(0, 21); 
+                while (originalLorHeaders.length < 21) {
+                    originalLorHeaders.push(`Column${originalLorHeaders.length + 1}`);
+                }
+
+                let trxDateColIdx = -1;
+                for (let c = 0; c < originalLorHeaders.length; c++) {
+                    if (originalLorHeaders[c] && String(originalLorHeaders[c]).toLowerCase().includes("trx date")) {
+                        trxDateColIdx = c;
+                        break;
+                    }
+                }
+                
+                const appendedHeaders = ['EA', 'OT', 'CS', 'PL', 'QTY', 'Pallet', 'Cases', 'Each'];
+                const finalHeaders = originalLorHeaders.concat(appendedHeaders);
+                resultAoA.push(finalHeaders);
+
+                // Construct Data Rows
+                for (let i = 1; i < lorAoA.length; i++) {
+                    const row = lorAoA[i];
+                    
+                    // Skip completely empty rows
+                    if (!row || row.length === 0 || row.join("").trim() === "") continue; 
+
+                    // Ensure the row spans exactly 21 columns safely
+                    let newRow = row.slice(0, 21);
+                    while (newRow.length < 21) newRow.push(""); 
+
+                    // LOR Key: Column F (index 5)
+                    const joinKey = String(newRow[5] || "").trim();
+                    
+                    // Fetch master data or default to [0,0,0,0]
+                    const masterVals = masterMap[joinKey] || [0, 0, 0, 0];
+                    newRow.push(...masterVals); // Appends to V, W, X, Y
+
+                    const rowNum = resultAoA.length + 1; // 1-indexed Excel row
+
+                    newRow.push(
+                        // QTY (Col Z) -> Absolute value of LOR Col U
+                        { t: 'n', v: 0, f: `ABS(U${rowNum})` },
+                        // Pallet (Col AA) -> Matches Master L2 Formula
+                        { t: 'n', v: 0, f: `IF(Z${rowNum}="","",IF(OR(Y${rowNum}="",Y${rowNum}<=0),"",QUOTIENT(Z${rowNum},Y${rowNum})))` },
+                        // Cases (Col AB) -> Matches Master M2 Formula
+                        { t: 'n', v: 0, f: `IF(Z${rowNum}="","",IF(OR(Y${rowNum}="",Y${rowNum}<=0,X${rowNum}="",X${rowNum}<=0),"",QUOTIENT(MOD(Z${rowNum},Y${rowNum}),X${rowNum})))` },
+                        // Each (Col AC) -> Matches Master N2 Formula
+                        { t: 'n', v: 0, f: `IF(Z${rowNum}="","",IF(OR(Y${rowNum}="",Y${rowNum}<=0,X${rowNum}="",X${rowNum}<=0,V${rowNum}="",V${rowNum}<=0),"",QUOTIENT(MOD(MOD(Z${rowNum},Y${rowNum}),X${rowNum}),V${rowNum})))` }
+                    );
+
+                    resultAoA.push(newRow);
+                }
+
+                updateStatus("Generating Downloadable File...", true);
+                await new Promise(resolve => setTimeout(resolve, 50));
+
+                // Convert directly into a sheet
+                const wsMerged = XLSX.utils.aoa_to_sheet(resultAoA);
+
+                // Set default column widths for better readability
+                wsMerged['!cols'] = Array(29).fill({wch: 12});
+                wsMerged['!cols'][5] = {wch: 18}; // Wider column for Item Code F
+                
+                // Process Cell Styles & Formats
+                const range = XLSX.utils.decode_range(wsMerged['!ref']);
+                for (let R = range.s.r; R <= range.e.r; ++R) {
+                    for (let C = range.s.c; C <= range.e.c; ++C) {
+                        const cellRef = XLSX.utils.encode_cell({c: C, r: R});
+                        if (!wsMerged[cellRef]) continue;
+
+                        // Default font & alignment
+                        wsMerged[cellRef].s = {
+                            font: { name: "Calibri", sz: 11 },
+                            alignment: { vertical: "center", horizontal: C >= 21 ? "center" : "left" }
+                        };
+
+                        // Header Row styling (Row 0)
+                        if (R === 0) {
+                            wsMerged[cellRef].s.font.bold = true;
+                            // Light Blue for LOR columns, Gold/Yellow for Appended Master columns
+                            wsMerged[cellRef].s.fill = { fgColor: { rgb: C < 21 ? "FFD9E1F2" : "FFFFE699" } };
+                            wsMerged[cellRef].s.border = {
+                                top: { style: "thin", color: { rgb: "FFBFBFBF" } },
+                                bottom: { style: "thin", color: { rgb: "FFBFBFBF" } },
+                                left: { style: "thin", color: { rgb: "FFBFBFBF" } },
+                                right: { style: "thin", color: { rgb: "FFBFBFBF" } }
+                            };
+                            wsMerged[cellRef].s.alignment.horizontal = "center";
+                        }
+
+                        // Trx Date Column Formatting (dd-mm-yyyy)
+                        if (R > 0 && C === trxDateColIdx) {
+                            wsMerged[cellRef].z = 'dd-mm-yyyy'; // Apply Excel Date Format
+                            
+                            // If interpreted as string but represents a valid date, convert to date object
+                            if (typeof wsMerged[cellRef].v === 'string') {
+                                const parsedDate = new Date(wsMerged[cellRef].v);
+                                if (!isNaN(parsedDate.getTime())) {
+                                    wsMerged[cellRef].v = parsedDate;
+                                    wsMerged[cellRef].t = 'd';
+                                }
+                            } else if (typeof wsMerged[cellRef].v === 'number') {
+                                wsMerged[cellRef].t = 'n'; // Ensure type allows formatting
+                            }
+                        }
+                    }
+                }
+
+                // Construct a new Workbook
+                const wbFinal = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wbFinal, wsMerged, "Mapped_Data");
+
+                // CRITICAL FIX: compression: true heavily reduces memory footprint and 
+                // prevents max callstack/array length errors in JS zipping routines.
+                const wbout = XLSX.write(wbFinal, { 
+                    bookType: 'xlsx', 
+                    type: 'array', 
+                    compression: true 
+                });
+
+                // Trigger file download via Blob URL
+                const blob = new Blob([wbout], { type: 'application/octet-stream' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                document.body.appendChild(a);
+                a.style = "display: none";
+                a.href = url;
+                a.download = "Processed_LOR_Dashboard_Output.xlsx";
+                a.click();
+                
+                // Cleanup
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                updateStatus("✅ File processed and downloaded successfully!", false);
+
+            } catch (err) {
+                console.error("Processing Error: ", err);
+                showError(err.message || "An unexpected error occurred during processing.");
+            } finally {
+                processBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
