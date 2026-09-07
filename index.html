@@ -44,38 +44,63 @@
                 <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">L'Oreal Data Pipeline</h1>
             </div>
             <p class="mt-4 text-slate-300 text-sm sm:text-base relative z-10 max-w-3xl leading-relaxed">
-                Upload your <strong>LOR.xlsx</strong> transactional file and the <strong>Items Master</strong> file. This tool merges the data, extracts packaging variables (EA, OT, CS, PL), and injects live Excel formulas (QTY, Pallet, Cases, Each) directly into the output file securely within your browser.
+                Upload your <strong>Loreal Outbound</strong> and/or <strong>Loreal Inbound</strong> transactional files along with the <strong>Items Master</strong> file. This tool merges the data securely in your browser and outputs a single file with separate tabs, mapped with packaging variables and live formulas.
             </p>
         </div>
 
         <div class="p-6 sm:p-10 space-y-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
-                <!-- LOR File Uploader -->
+                <!-- Loreal Outbound Uploader -->
                 <div class="space-y-3">
-                    <label class="block text-sm font-semibold text-gray-700">1. Main File (LOR.xlsx)</label>
-                    <div id="lor-zone" class="file-drop-zone relative border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer h-48">
-                        <input type="file" id="lor-file" accept=".xlsx, .xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                        <div class="bg-blue-100 text-blue-600 p-3 rounded-full mb-3">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                    <label class="block text-sm font-semibold text-gray-700">1. Loreal Outbound</label>
+                    <div id="outbound-zone" class="file-drop-zone relative border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer h-40">
+                        <input type="file" id="outbound-file" accept=".xlsx, .xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <div class="bg-blue-100 text-blue-600 p-2.5 rounded-full mb-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                         </div>
-                        <span class="text-sm text-gray-600 font-medium">Drag & drop or browse</span>
-                        <span id="lor-name" class="mt-2 text-xs font-semibold text-blue-600 text-center px-4 break-all"></span>
+                        <span class="text-xs text-gray-600 font-medium text-center">Upload Outbound</span>
+                        <span id="outbound-name" class="mt-1 text-[10px] font-semibold text-blue-600 text-center px-2 break-all line-clamp-2"></span>
+                    </div>
+                </div>
+
+                <!-- Loreal Inbound Uploader -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-semibold text-gray-700">2. Loreal Inbound</label>
+                    <div id="inbound-zone" class="file-drop-zone relative border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer h-40">
+                        <input type="file" id="inbound-file" accept=".xlsx, .xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <div class="bg-emerald-100 text-emerald-600 p-2.5 rounded-full mb-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        </div>
+                        <span class="text-xs text-gray-600 font-medium text-center">Upload Inbound</span>
+                        <span id="inbound-name" class="mt-1 text-[10px] font-semibold text-emerald-600 text-center px-2 break-all line-clamp-2"></span>
                     </div>
                 </div>
 
                 <!-- Master File Uploader -->
                 <div class="space-y-3">
-                    <label class="block text-sm font-semibold text-gray-700">2. Items Master File</label>
-                    <div id="master-zone" class="file-drop-zone relative border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer h-48">
+                    <label class="block text-sm font-semibold text-gray-700">3. Items Master File</label>
+                    <div id="master-zone" class="file-drop-zone relative border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer h-40">
                         <input type="file" id="master-file" accept=".xlsx, .xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                        <div class="bg-blue-100 text-blue-600 p-3 rounded-full mb-3">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        <div class="bg-amber-100 text-amber-600 p-2.5 rounded-full mb-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         </div>
-                        <span class="text-sm text-gray-600 font-medium">Drag & drop or browse</span>
-                        <span id="master-name" class="mt-2 text-xs font-semibold text-blue-600 text-center px-4 break-all"></span>
+                        <span class="text-xs text-gray-600 font-medium text-center">Upload Master</span>
+                        <span id="master-name" class="mt-1 text-[10px] font-semibold text-amber-600 text-center px-2 break-all line-clamp-2"></span>
                     </div>
                 </div>
+            </div>
+
+            <!-- Alternative Formulas Toggle -->
+            <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 flex items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-sm font-semibold text-indigo-900">Alternative Inbound Formulas</h3>
+                    <p class="text-xs text-indigo-700 mt-1">Use the "Palletized Flag" logic to calculate Pallet, Cases, and Each (Applies only to the Inbound sheet).</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input type="checkbox" id="alt-formulas-toggle" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                </label>
             </div>
 
             <hr class="border-gray-200">
@@ -104,10 +129,13 @@
 
     <script>
         // DOM Elements
-        const lorInput = document.getElementById('lor-file');
+        const outboundInput = document.getElementById('outbound-file');
+        const inboundInput = document.getElementById('inbound-file');
         const masterInput = document.getElementById('master-file');
-        const lorName = document.getElementById('lor-name');
+        const outboundName = document.getElementById('outbound-name');
+        const inboundName = document.getElementById('inbound-name');
         const masterName = document.getElementById('master-name');
+        
         const processBtn = document.getElementById('process-btn');
         const statusContainer = document.getElementById('status-container');
         const statusText = document.getElementById('status-text');
@@ -115,25 +143,37 @@
         const errorBox = document.getElementById('error-box');
         const errorMsg = document.getElementById('error-msg');
 
-        let lorFileObj = null;
+        let outboundFileObj = null;
+        let inboundFileObj = null;
         let masterFileObj = null;
 
+        // Helper to get Excel Column Letter from zero-based index
+        function getColLetter(colIdx) {
+            let letter = '';
+            while (colIdx >= 0) {
+                letter = String.fromCharCode((colIdx % 26) + 65) + letter;
+                colIdx = Math.floor(colIdx / 26) - 1;
+            }
+            return letter;
+        }
+
         // UI Event Listeners for File Inputs
-        function handleFileSelect(inputElement, nameElement, isMaster) {
+        function handleFileSelect(inputElement, nameElement, type) {
             if (inputElement.files.length > 0) {
                 const file = inputElement.files[0];
                 nameElement.textContent = file.name;
-                if (isMaster) {
-                    masterFileObj = file;
-                } else {
-                    lorFileObj = file;
-                }
+                
+                if (type === 'master') masterFileObj = file;
+                else if (type === 'outbound') outboundFileObj = file;
+                else if (type === 'inbound') inboundFileObj = file;
+                
                 checkReadyState();
             }
         }
 
-        lorInput.addEventListener('change', () => handleFileSelect(lorInput, lorName, false));
-        masterInput.addEventListener('change', () => handleFileSelect(masterInput, masterName, true));
+        outboundInput.addEventListener('change', () => handleFileSelect(outboundInput, outboundName, 'outbound'));
+        inboundInput.addEventListener('change', () => handleFileSelect(inboundInput, inboundName, 'inbound'));
+        masterInput.addEventListener('change', () => handleFileSelect(masterInput, masterName, 'master'));
 
         // Drag and drop visual tweaks
         document.querySelectorAll('.file-drop-zone').forEach(zone => {
@@ -151,7 +191,8 @@
         });
 
         function checkReadyState() {
-            processBtn.disabled = !(lorFileObj && masterFileObj);
+            // Enable if Master is uploaded AND at least one of Outbound or Inbound is uploaded
+            processBtn.disabled = !(masterFileObj && (outboundFileObj || inboundFileObj));
         }
 
         function showError(msg) {
@@ -175,7 +216,6 @@
             }
         }
 
-        // Helper to read file as ArrayBuffer
         function readFileAsync(file) {
             return new Promise((resolve, reject) => {
                 let reader = new FileReader();
@@ -185,49 +225,182 @@
             });
         }
 
+        // Reusable Sheet Processing Function
+        async function processTransactionData(fileObj, masterMap, qtySourceColIdx, joinColIdx, outputSheetName, inputSheetName = null, headerRowIdx = 0, useAltFormulas = false) {
+            const data = await readFileAsync(fileObj);
+            const wb = XLSX.read(data, { type: 'array' });
+            
+            // Select the targeted sheet, or fallback to the first sheet
+            let ws;
+            if (inputSheetName && wb.SheetNames.includes(inputSheetName)) {
+                ws = wb.Sheets[inputSheetName];
+            } else {
+                ws = wb.Sheets[wb.SheetNames[0]]; 
+            }
+
+            const aoa = XLSX.utils.sheet_to_json(ws, { header: 1 });
+
+            if (aoa.length <= headerRowIdx) throw new Error(`The ${outputSheetName} file appears to be empty or missing data rows.`);
+
+            const resultAoA = [];
+            
+            // Determine base columns dynamically, capping strictly at the QTY source column to drop unwanted trailing data
+            const originalHeaders = Array.isArray(aoa[headerRowIdx]) ? aoa[headerRowIdx] : [];
+            let baseColCount = qtySourceColIdx + 1;
+            
+            // Build sanitized headers
+            let headers = [];
+            for (let i = 0; i < baseColCount; i++) {
+                headers.push(originalHeaders[i] !== undefined && originalHeaders[i] !== "" ? originalHeaders[i] : `Column${i + 1}`);
+            }
+
+            let trxDateColIdx = -1;
+            let palletFlagColIdx = -1;
+            for (let c = 0; c < headers.length; c++) {
+                if (headers[c]) {
+                    const headerStr = String(headers[c]).toLowerCase();
+                    if (headerStr.includes("trx date")) trxDateColIdx = c;
+                    if (headerStr.includes("pallet") && headerStr.includes("flag")) palletFlagColIdx = c;
+                }
+            }
+            
+            const appendedHeaders = ['EA', 'OT', 'CS', 'PL', 'QTY', 'Pallet', 'Cases', 'Each'];
+            resultAoA.push(headers.concat(appendedHeaders));
+
+            // Extract row data starting after the designated header row
+            for (let i = headerRowIdx + 1; i < aoa.length; i++) {
+                const row = aoa[i];
+                if (!row || !Array.isArray(row) || row.length === 0) continue; 
+
+                // Dynamic Item Code column based on file type (Index passed as parameter)
+                const rawKey = row[joinColIdx] !== undefined && row[joinColIdx] !== null ? String(row[joinColIdx]) : "";
+                // Normalize key: remove periods and trim to ensure matching
+                const joinKey = rawKey.replace(/\./g, '').trim();
+                
+                if (!joinKey) continue; 
+
+                let newRow = [];
+                for (let c = 0; c < baseColCount; c++) {
+                    newRow.push(row[c] !== undefined ? row[c] : "");
+                }
+
+                // Append master data
+                const masterVals = masterMap[joinKey] || [0, 0, 0, 0];
+                newRow.push(...masterVals); 
+                newRow.push(0, 0, 0, 0); // Placeholders for QTY, Pallet, Cases, Each
+
+                resultAoA.push(newRow);
+            }
+
+            if (resultAoA.length > 200000) {
+                throw new Error(`Dataset in ${outputSheetName} is too large for browser processing. Please split into smaller chunks.`);
+            }
+
+            // Convert to sheet object
+            const wsMerged = XLSX.utils.aoa_to_sheet(resultAoA);
+
+            // Default widths
+            wsMerged['!cols'] = Array(baseColCount + 8).fill({wch: 12});
+            wsMerged['!cols'][joinColIdx] = {wch: 18}; // Wider Item Code column
+            
+            const range = XLSX.utils.decode_range(wsMerged['!ref']);
+            
+            // Dynamically fetch formula column letters based on the dynamically calculated baseColCount
+            const qtySourceLetter = getColLetter(qtySourceColIdx);
+            const eaLetter = getColLetter(baseColCount);
+            const otLetter = getColLetter(baseColCount + 1);
+            const csLetter = getColLetter(baseColCount + 2);
+            const plLetter = getColLetter(baseColCount + 3);
+            const qtyTargetLetter = getColLetter(baseColCount + 4);
+            const palletLetter = getColLetter(baseColCount + 5);
+            const casesLetter = getColLetter(baseColCount + 6);
+            const eachLetter = getColLetter(baseColCount + 7);
+            
+            const palletFlagLetter = palletFlagColIdx !== -1 ? getColLetter(palletFlagColIdx) : '';
+            const applyAlt = useAltFormulas && palletFlagLetter !== '';
+
+            // Style headers
+            for (let C = range.s.c; C <= range.e.c; ++C) {
+                const cellRef = XLSX.utils.encode_cell({c: C, r: 0});
+                if (wsMerged[cellRef]) {
+                    wsMerged[cellRef].s = {
+                        font: { bold: true, name: "Calibri", sz: 11 },
+                        fill: { fgColor: { rgb: C < baseColCount ? "FFD9E1F2" : "FFFFE699" } },
+                        border: {
+                            top: { style: "thin", color: { rgb: "FFBFBFBF" } },
+                            bottom: { style: "thin", color: { rgb: "FFBFBFBF" } },
+                            left: { style: "thin", color: { rgb: "FFBFBFBF" } },
+                            right: { style: "thin", color: { rgb: "FFBFBFBF" } }
+                        },
+                        alignment: { vertical: "center", horizontal: "center" }
+                    };
+                }
+            }
+
+            // Inject Formulas & Date format
+            for (let R = 1; R <= range.e.r; ++R) {
+                const rowNum = R + 1;
+                
+                const qtyRef = XLSX.utils.encode_cell({c: baseColCount + 4, r: R});
+                const palletRef = XLSX.utils.encode_cell({c: baseColCount + 5, r: R});
+                const casesRef = XLSX.utils.encode_cell({c: baseColCount + 6, r: R});
+                const eachRef = XLSX.utils.encode_cell({c: baseColCount + 7, r: R});
+
+                wsMerged[qtyRef] = { t: 'n', v: 0, f: `ABS(${qtySourceLetter}${rowNum})` };
+                
+                if (applyAlt) {
+                    // Exact alternative formulas based on Palletized Flag
+                    wsMerged[palletRef] = { t: 'n', v: 0, f: `IF(${palletFlagLetter}${rowNum}="Pallitized", 1, IF(${palletFlagLetter}${rowNum}="Un-Pallitized", 0, ""))` };
+                    wsMerged[casesRef] = { t: 'n', v: 0, f: `IF(${palletFlagLetter}${rowNum}="Pallitized", 0, IF(${palletFlagLetter}${rowNum}="Un-Pallitized", IFERROR(QUOTIENT(${qtyTargetLetter}${rowNum}, ${csLetter}${rowNum}), 0), ""))` };
+                    wsMerged[eachRef] = { t: 'n', v: 0, f: `IF(${palletFlagLetter}${rowNum}="Pallitized", 0, IF(${palletFlagLetter}${rowNum}="Un-Pallitized", IFERROR(MOD(${qtyTargetLetter}${rowNum}, ${csLetter}${rowNum}), 0), ""))` };
+                } else {
+                    // Standard Item Master formulas
+                    wsMerged[palletRef] = { t: 'n', v: 0, f: `IF(${qtyTargetLetter}${rowNum}="","",IF(OR(${plLetter}${rowNum}="",${plLetter}${rowNum}<=0),"",QUOTIENT(${qtyTargetLetter}${rowNum},${plLetter}${rowNum})))` };
+                    wsMerged[casesRef] = { t: 'n', v: 0, f: `IF(${qtyTargetLetter}${rowNum}="","",IF(OR(${plLetter}${rowNum}="",${plLetter}${rowNum}<=0,${csLetter}${rowNum}="",${csLetter}${rowNum}<=0),"",QUOTIENT(MOD(${qtyTargetLetter}${rowNum},${plLetter}${rowNum}),${csLetter}${rowNum})))` };
+                    wsMerged[eachRef] = { t: 'n', v: 0, f: `IF(${qtyTargetLetter}${rowNum}="","",IF(OR(${plLetter}${rowNum}="",${plLetter}${rowNum}<=0,${csLetter}${rowNum}="",${csLetter}${rowNum}<=0,${eaLetter}${rowNum}="",${eaLetter}${rowNum}<=0),"",QUOTIENT(MOD(MOD(${qtyTargetLetter}${rowNum},${plLetter}${rowNum}),${csLetter}${rowNum}),${eaLetter}${rowNum})))` };
+                }
+
+                if (trxDateColIdx !== -1) {
+                    const dateCellRef = XLSX.utils.encode_cell({c: trxDateColIdx, r: R});
+                    if (wsMerged[dateCellRef]) {
+                        wsMerged[dateCellRef].z = 'dd-mm-yyyy';
+                        if (typeof wsMerged[dateCellRef].v === 'string') {
+                            const parsedDate = new Date(wsMerged[dateCellRef].v);
+                            if (!isNaN(parsedDate.getTime())) {
+                                wsMerged[dateCellRef].v = parsedDate;
+                                wsMerged[dateCellRef].t = 'd';
+                            }
+                        } else if (typeof wsMerged[dateCellRef].v === 'number') {
+                            wsMerged[dateCellRef].t = 'n'; 
+                        }
+                    }
+                }
+            }
+            
+            return wsMerged;
+        }
+
         processBtn.addEventListener('click', async () => {
             try {
                 processBtn.disabled = true;
-                updateStatus("Reading Excel files...", true);
-
-                // Add small delay to let UI render the loading state before blocking thread
+                updateStatus("Reading Master Data...", true);
                 await new Promise(resolve => setTimeout(resolve, 100)); 
 
-                // 1. Read files into memory
-                const lorData = await readFileAsync(lorFileObj);
+                // 1. Read Master Map
                 const masterData = await readFileAsync(masterFileObj);
-
-                const wbLor = XLSX.read(lorData, { type: 'array' });
                 const wbMaster = XLSX.read(masterData, { type: 'array' });
-
-                const wsLor = wbLor.Sheets[wbLor.SheetNames[0]];
                 const wsMaster = wbMaster.Sheets[wbMaster.SheetNames[0]];
+                const masterAoA = XLSX.utils.sheet_to_json(wsMaster, { header: 1 });
 
-                updateStatus("Parsing rows...", true);
-                await new Promise(resolve => setTimeout(resolve, 50)); 
+                if (masterAoA.length < 1) throw new Error("The Master sheet appears to be empty.");
 
-                // Convert to Array of Arrays. 
-                // CRITICAL FIX: defval: "" ensures no sparse arrays (which cause Invalid Array Length crashes)
-                const lorAoA = XLSX.utils.sheet_to_json(wsLor, { header: 1, defval: "" });
-                const masterAoA = XLSX.utils.sheet_to_json(wsMaster, { header: 1, defval: "" });
-
-                if (lorAoA.length < 1 || masterAoA.length < 1) {
-                    throw new Error("One or both of the Excel sheets appear to be completely empty.");
-                }
-
-                updateStatus("Building Lookup Table...", true);
-                await new Promise(resolve => setTimeout(resolve, 50));
-
-                // 2. Build Master Mapping Object
-                // Master Key: Column B (index 1)
-                // Values to extract: G(6), H(7), I(8), J(9) -> (EA, OT, CS, PL)
                 const masterMap = {};
                 for (let i = 1; i < masterAoA.length; i++) {
                     const row = masterAoA[i];
-                    if (row && row.length > 1) {
-                        const key = String(row[1]).trim();
+                    if (row && Array.isArray(row) && row.length > 1) {
+                        // Normalize key: remove periods and trim
+                        const key = String(row[1] || "").replace(/\./g, '').trim();
                         if (key !== "") {
-                            // Convert packaging values to strict numbers
                             masterMap[key] = [
                                 Number(row[6]) || 0, // EA
                                 Number(row[7]) || 0, // OT
@@ -238,146 +411,51 @@
                     }
                 }
 
-                updateStatus("Merging & Injecting Formulas...", true);
-                await new Promise(resolve => setTimeout(resolve, 50));
+                const wbFinal = XLSX.utils.book_new();
 
-                // 3. Construct Final Merged Data Layout
-                const resultAoA = [];
-                
-                // Construct Headers safely up to Column U (index 0 to 20)
-                const originalLorHeaders = lorAoA[0].slice(0, 21); 
-                while (originalLorHeaders.length < 21) {
-                    originalLorHeaders.push(`Column${originalLorHeaders.length + 1}`);
+                // 2. Process Outbound if available
+                if (outboundFileObj) {
+                    updateStatus("Processing Loreal Outbound...", true);
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                    // Outbound QTY source is Col U -> index 20, Item Code is Col F -> index 5
+                    // Uses defaults: reads first sheet, headers start at row 1 (index 0), NEVER applies alt formulas
+                    const wsOutbound = await processTransactionData(outboundFileObj, masterMap, 20, 5, "Outbound", null, 0, false);
+                    if(wsOutbound) XLSX.utils.book_append_sheet(wbFinal, wsOutbound, "Outbound");
                 }
 
-                let trxDateColIdx = -1;
-                for (let c = 0; c < originalLorHeaders.length; c++) {
-                    if (originalLorHeaders[c] && String(originalLorHeaders[c]).toLowerCase().includes("trx date")) {
-                        trxDateColIdx = c;
-                        break;
-                    }
-                }
-                
-                const appendedHeaders = ['EA', 'OT', 'CS', 'PL', 'QTY', 'Pallet', 'Cases', 'Each'];
-                const finalHeaders = originalLorHeaders.concat(appendedHeaders);
-                resultAoA.push(finalHeaders);
-
-                // Construct Data Rows
-                for (let i = 1; i < lorAoA.length; i++) {
-                    const row = lorAoA[i];
-                    
-                    // Skip completely empty rows
-                    if (!row || row.length === 0 || row.join("").trim() === "") continue; 
-
-                    // Ensure the row spans exactly 21 columns safely
-                    let newRow = row.slice(0, 21);
-                    while (newRow.length < 21) newRow.push(""); 
-
-                    // LOR Key: Column F (index 5)
-                    const joinKey = String(newRow[5] || "").trim();
-                    
-                    // Fetch master data or default to [0,0,0,0]
-                    const masterVals = masterMap[joinKey] || [0, 0, 0, 0];
-                    newRow.push(...masterVals); // Appends to V, W, X, Y
-
-                    const rowNum = resultAoA.length + 1; // 1-indexed Excel row
-
-                    newRow.push(
-                        // QTY (Col Z) -> Absolute value of LOR Col U
-                        { t: 'n', v: 0, f: `ABS(U${rowNum})` },
-                        // Pallet (Col AA) -> Matches Master L2 Formula
-                        { t: 'n', v: 0, f: `IF(Z${rowNum}="","",IF(OR(Y${rowNum}="",Y${rowNum}<=0),"",QUOTIENT(Z${rowNum},Y${rowNum})))` },
-                        // Cases (Col AB) -> Matches Master M2 Formula
-                        { t: 'n', v: 0, f: `IF(Z${rowNum}="","",IF(OR(Y${rowNum}="",Y${rowNum}<=0,X${rowNum}="",X${rowNum}<=0),"",QUOTIENT(MOD(Z${rowNum},Y${rowNum}),X${rowNum})))` },
-                        // Each (Col AC) -> Matches Master N2 Formula
-                        { t: 'n', v: 0, f: `IF(Z${rowNum}="","",IF(OR(Y${rowNum}="",Y${rowNum}<=0,X${rowNum}="",X${rowNum}<=0,V${rowNum}="",V${rowNum}<=0),"",QUOTIENT(MOD(MOD(Z${rowNum},Y${rowNum}),X${rowNum}),V${rowNum})))` }
-                    );
-
-                    resultAoA.push(newRow);
+                // 3. Process Inbound if available
+                if (inboundFileObj) {
+                    const useAltInbound = document.getElementById('alt-formulas-toggle').checked;
+                    updateStatus("Processing Loreal Inbound...", true);
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                    // Inbound QTY source is Col U -> index 20, Item Code is Col K -> index 10
+                    // Targets "Detail" sheet, headers start at row 6 (index 5)
+                    const wsInbound = await processTransactionData(inboundFileObj, masterMap, 20, 10, "Inbound", "Detail", 5, useAltInbound);
+                    if(wsInbound) XLSX.utils.book_append_sheet(wbFinal, wsInbound, "Inbound");
                 }
 
                 updateStatus("Generating Downloadable File...", true);
                 await new Promise(resolve => setTimeout(resolve, 50));
 
-                // Convert directly into a sheet
-                const wsMerged = XLSX.utils.aoa_to_sheet(resultAoA);
-
-                // Set default column widths for better readability
-                wsMerged['!cols'] = Array(29).fill({wch: 12});
-                wsMerged['!cols'][5] = {wch: 18}; // Wider column for Item Code F
-                
-                // Process Cell Styles & Formats
-                const range = XLSX.utils.decode_range(wsMerged['!ref']);
-                for (let R = range.s.r; R <= range.e.r; ++R) {
-                    for (let C = range.s.c; C <= range.e.c; ++C) {
-                        const cellRef = XLSX.utils.encode_cell({c: C, r: R});
-                        if (!wsMerged[cellRef]) continue;
-
-                        // Default font & alignment
-                        wsMerged[cellRef].s = {
-                            font: { name: "Calibri", sz: 11 },
-                            alignment: { vertical: "center", horizontal: C >= 21 ? "center" : "left" }
-                        };
-
-                        // Header Row styling (Row 0)
-                        if (R === 0) {
-                            wsMerged[cellRef].s.font.bold = true;
-                            // Light Blue for LOR columns, Gold/Yellow for Appended Master columns
-                            wsMerged[cellRef].s.fill = { fgColor: { rgb: C < 21 ? "FFD9E1F2" : "FFFFE699" } };
-                            wsMerged[cellRef].s.border = {
-                                top: { style: "thin", color: { rgb: "FFBFBFBF" } },
-                                bottom: { style: "thin", color: { rgb: "FFBFBFBF" } },
-                                left: { style: "thin", color: { rgb: "FFBFBFBF" } },
-                                right: { style: "thin", color: { rgb: "FFBFBFBF" } }
-                            };
-                            wsMerged[cellRef].s.alignment.horizontal = "center";
-                        }
-
-                        // Trx Date Column Formatting (dd-mm-yyyy)
-                        if (R > 0 && C === trxDateColIdx) {
-                            wsMerged[cellRef].z = 'dd-mm-yyyy'; // Apply Excel Date Format
-                            
-                            // If interpreted as string but represents a valid date, convert to date object
-                            if (typeof wsMerged[cellRef].v === 'string') {
-                                const parsedDate = new Date(wsMerged[cellRef].v);
-                                if (!isNaN(parsedDate.getTime())) {
-                                    wsMerged[cellRef].v = parsedDate;
-                                    wsMerged[cellRef].t = 'd';
-                                }
-                            } else if (typeof wsMerged[cellRef].v === 'number') {
-                                wsMerged[cellRef].t = 'n'; // Ensure type allows formatting
-                            }
-                        }
-                    }
-                }
-
-                // Construct a new Workbook
-                const wbFinal = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wbFinal, wsMerged, "Mapped_Data");
-
-                // CRITICAL FIX: compression: true heavily reduces memory footprint and 
-                // prevents max callstack/array length errors in JS zipping routines.
                 const wbout = XLSX.write(wbFinal, { 
                     bookType: 'xlsx', 
                     type: 'array', 
                     compression: true 
                 });
 
-                // Trigger file download via Blob URL
                 const blob = new Blob([wbout], { type: 'application/octet-stream' });
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 document.body.appendChild(a);
                 a.style = "display: none";
                 a.href = url;
-                a.download = "Processed_LOR_Dashboard_Output.xlsx";
+                a.download = "Processed_Loreal_Dashboard_Output.xlsx";
                 a.click();
                 
-                // Cleanup
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
 
-                updateStatus("✅ File processed and downloaded successfully!", false);
+                updateStatus("✅ Files processed and downloaded successfully!", false);
 
             } catch (err) {
                 console.error("Processing Error: ", err);
